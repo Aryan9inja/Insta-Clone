@@ -47,6 +47,15 @@ export const signUp = async (
     );
 
     await account.createVerification(REDIRECT_URL);
+
+    const enrichedUser = {
+      userId: user.$id,
+      username,
+      name,
+      profile_Img: DEFAULT_PROFILE_IMAGE_ID,
+    };
+
+    return enrichedUser;
   } catch (error: any) {
     console.log("Signup failed: ", error);
     throw error;
@@ -73,7 +82,13 @@ export const logout = async () => {
 
 export const getCurrentUser = async () => {
   try {
-    return await account.get();
+    const user = await account.get();
+    const enrichedUser = await databases.getDocument(
+      DATABASE_ID,
+      COLLECTION_USERS,
+      user.$id
+    );
+    return enrichedUser;
   } catch (error) {
     return null;
   }
