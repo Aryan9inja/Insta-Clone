@@ -6,6 +6,14 @@ import {
   REDIRECT_URL,
 } from "../constants/appwrite";
 import { account, ID, databases } from "../lib/appwrite.config";
+import type { Models } from "appwrite";
+
+interface User {
+  userId: string;
+  username: string;
+  name: string;
+  profile_Img: string;
+}
 
 export const signUp = async (
   email: string,
@@ -80,15 +88,23 @@ export const logout = async () => {
   }
 };
 
-export const getCurrentUser = async () => {
+export const getCurrentUser = async (): Promise<User | null> => {
   try {
-    const user = await account.get();
-    const enrichedUser = await databases.getDocument(
+    const session = await account.get();
+    const userDoc: Models.Document = await databases.getDocument(
       DATABASE_ID,
       COLLECTION_USERS,
-      user.$id
+      session.$id
     );
-    return enrichedUser;
+
+    const user: User = {
+      userId: userDoc.userId,
+      username: userDoc.username,
+      name: userDoc.name,
+      profile_Img: userDoc.profile_Img,
+    };
+
+    return user;
   } catch (error) {
     return null;
   }
