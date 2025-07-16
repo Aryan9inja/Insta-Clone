@@ -5,6 +5,7 @@ interface Props {
   isLoading?: boolean;
   disabled?: boolean;
   classname?: string;
+  onClick?: () => void;
 }
 
 const CustomButton = ({
@@ -14,12 +15,14 @@ const CustomButton = ({
   isLoading = false,
   disabled = false,
   classname = "",
+  onClick,
 }: Props) => {
   return (
     <div className="mb-4">
       <button
         type={type}
         disabled={isLoading || disabled}
+        onClick={onClick}
         className={`
           px-4 py-2 rounded-lg transition duration-200 w-full
           bg-light-primary text-light-text

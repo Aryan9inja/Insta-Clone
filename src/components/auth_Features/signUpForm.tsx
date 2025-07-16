@@ -5,8 +5,12 @@ import { signupSchema, type SignupFormData } from "../../schemas/signUp.schema";
 import { useAppDispatch, useAppSelector } from "../../hooks/useRedux";
 import { signUpThunk } from "../../store/users.thunks";
 import CustomButton from "../ui/button";
+import { useNavigate } from "react-router-dom";
+import { sendVerificationEmail } from "../../services/users.services";
 
 const SignUpForm = () => {
+  const navigate = useNavigate();
+
   const dispatch = useAppDispatch();
   const { isLoading, error } = useAppSelector((state) => state.users);
 
@@ -20,6 +24,8 @@ const SignUpForm = () => {
 
   const onSubmit = async (data: SignupFormData) => {
     await dispatch(signUpThunk(data));
+    await sendVerificationEmail();
+    navigate("/verify-email");
   };
 
   return (
@@ -33,7 +39,9 @@ const SignUpForm = () => {
         </h2>
 
         {error && (
-          <p className="text-error text-sm mb-4 text-center font-medium">{error}</p>
+          <p className="text-error text-sm mb-4 text-center font-medium">
+            {error}
+          </p>
         )}
 
         <FormInputBox

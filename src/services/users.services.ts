@@ -54,8 +54,6 @@ export const signUp = async (
       ]
     );
 
-    await account.createVerification(REDIRECT_URL);
-
     const enrichedUser = {
       userId: user.$id,
       username,
