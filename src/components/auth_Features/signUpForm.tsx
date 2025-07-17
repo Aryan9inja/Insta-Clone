@@ -94,6 +94,7 @@ const SignUpForm = () => {
           <div className="text-sm flex justify-center gap-1 text-light-text dark:text-dark-text mt-2">
             <span>Already a user?</span>
             <button
+              onClick={()=>navigate("/login")}
               type="button"
               className="cursor-pointer font-semibold text-light-primary hover:underline dark:text-dark-primary"
             >
