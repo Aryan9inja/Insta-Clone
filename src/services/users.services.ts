@@ -4,8 +4,9 @@ import {
   COLLECTION_USERS,
   DEFAULT_PROFILE_IMAGE_ID,
   REDIRECT_URL,
+  BUCKET_ID,
 } from "../constants/appwrite";
-import { account, ID, databases } from "../lib/appwrite.config";
+import { account, ID, databases, storage } from "../lib/appwrite.config";
 import type { Models } from "appwrite";
 
 interface User {
@@ -114,4 +115,8 @@ export const sendVerificationEmail = async () => {
 
 export const verifyEmail = async (userId: string, secret: string) => {
   return await account.updateVerification(userId, secret);
+};
+
+export const getProfileImgUrl = (fileId: string) => {
+  return storage.getFileDownload(BUCKET_ID, fileId ?? DEFAULT_PROFILE_IMAGE_ID);
 };
