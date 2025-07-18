@@ -5,16 +5,36 @@ import VerifyEmailNotice from "../components/auth_Features/verifyEmailNotice";
 import EmailVerification from "../components/auth_Features/verifyEmail";
 import LoginForm from "../components/auth_Features/loginForm";
 import ProfilePage from "../pages/ProfilePage";
+import ProtectedRoute from "../components/auth_Features/protectedRoute";
+
+const publicRoutes = [
+  { path: "/signup", element: <SignUpForm /> },
+  { path: "/login", element: <LoginForm /> },
+  { path: "/verify-email", element: <VerifyEmailNotice /> },
+  { path: "/verify", element: <EmailVerification /> },
+];
+
+const protectedRoutes = [
+  { path: "/profile", element: <ProfilePage /> },
+  { path: "/", element: <HomePage /> },
+];
 
 const AppRoutes = () => {
   return (
     <Routes>
-      <Route path="/" element={<HomePage />} />
-      <Route path="/signup" element={<SignUpForm />} />
-      <Route path="/verify-email" element={<VerifyEmailNotice />} />
-      <Route path="/verify" element={<EmailVerification />} />
-      <Route path="/login" element={<LoginForm />} />
-      <Route path="/profile" element={<ProfilePage/>}/>
+      {/* Public Routes */}
+      {publicRoutes.map(({ path, element }) => (
+        <Route key={path} path={path} element={element} />
+      ))}
+
+      {/* Protected Routes */}
+      {protectedRoutes.map(({ path, element }) => (
+        <Route
+          key={path}
+          path={path}
+          element={<ProtectedRoute children={element} />}
+        />
+      ))}
     </Routes>
   );
 };
