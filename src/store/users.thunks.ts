@@ -4,6 +4,7 @@ import {
   login,
   getCurrentUser,
   logout,
+  createUserProfile,
 } from "../services/users.services";
 import type { SignupFormData } from "../schemas/signUp.schema";
 import type { LoginFormData } from "../schemas/login.schema";
@@ -12,12 +13,16 @@ export const signUpThunk = createAsyncThunk(
   "users/signup",
   async (formData: SignupFormData, { rejectWithValue }) => {
     try {
-      return await signUp(
+      const acountUser = await signUp(
         formData.email,
         formData.password,
-        formData.name,
-        formData.username
+        formData.name
       );
+
+      await createUserProfile(acountUser.$id, formData.username, formData.name);
+
+      const fullUser = getCurrentUser();
+      return fullUser;
     } catch (error: any) {
       return rejectWithValue(error?.message || "Signup Failed");
     }

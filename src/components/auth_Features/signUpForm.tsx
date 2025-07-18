@@ -6,7 +6,10 @@ import { useAppDispatch, useAppSelector } from "../../hooks/useRedux";
 import { signUpThunk } from "../../store/users.thunks";
 import CustomButton from "../ui/button";
 import { useNavigate } from "react-router-dom";
-import { sendVerificationEmail } from "../../services/users.services";
+import {
+  isUsernameAvailable,
+  sendVerificationEmail,
+} from "../../services/users.services";
 import { Toaster, toast } from "sonner";
 
 const SignUpForm = () => {
@@ -24,6 +27,14 @@ const SignUpForm = () => {
   });
 
   const onSubmit = async (data: SignupFormData) => {
+    const isAvailable = await isUsernameAvailable(data.username);
+    console.log("isAvailable:", isAvailable); // 🔍 DEBUG
+
+    if (!isAvailable) {
+      toast.error("Username already taken");
+      return;
+    }
+
     const result = await dispatch(signUpThunk(data));
 
     if (signUpThunk.fulfilled.match(result)) {
@@ -94,7 +105,7 @@ const SignUpForm = () => {
           <div className="text-sm flex justify-center gap-1 text-light-text dark:text-dark-text mt-2">
             <span>Already a user?</span>
             <button
-              onClick={()=>navigate("/login")}
+              onClick={() => navigate("/login")}
               type="button"
               className="cursor-pointer font-semibold text-light-primary hover:underline dark:text-dark-primary"
             >

@@ -1,4 +1,4 @@
-import { Permission, Query, Role } from "appwrite";
+import { Permission, Role, Query } from "appwrite";
 import {
   DATABASE_ID,
   COLLECTION_USERS,
@@ -16,53 +16,12 @@ interface User {
   profile_Img: string;
 }
 
-export const signUp = async (
-  email: string,
-  password: string,
-  name: string,
-  username: string
-) => {
+export const signUp = async (email: string, password: string, name: string) => {
   try {
-    const existingUsers = await databases.listDocuments(
-      DATABASE_ID,
-      COLLECTION_USERS,
-      [Query.equal("username", username)]
-    );
-
-    if (existingUsers.total > 0) {
-      throw new Error("Username already taken");
-    }
-
     await account.create(ID.unique(), email, password, name);
-
     await account.createEmailPasswordSession(email, password);
-
     const user = await account.get();
-
-    await databases.createDocument(
-      DATABASE_ID,
-      COLLECTION_USERS,
-      user.$id,
-      {
-        userId: user.$id,
-        username,
-        name,
-        profile_Img: DEFAULT_PROFILE_IMAGE_ID,
-      },
-      [
-        Permission.read(Role.user(user.$id)),
-        Permission.update(Role.user(user.$id)),
-      ]
-    );
-
-    const enrichedUser = {
-      userId: user.$id,
-      username,
-      name,
-      profile_Img: DEFAULT_PROFILE_IMAGE_ID,
-    };
-
-    return enrichedUser;
+    return user;
   } catch (error: any) {
     console.log("Signup failed: ", error);
     throw error;
@@ -119,4 +78,46 @@ export const verifyEmail = async (userId: string, secret: string) => {
 
 export const getProfileImgUrl = (fileId: string) => {
   return storage.getFileDownload(BUCKET_ID, fileId ?? DEFAULT_PROFILE_IMAGE_ID);
+};
+
+export const createUserProfile = async (
+  userId: string,
+  username: string,
+  name: string
+) => {
+  const userDoc: Models.Document = await databases.createDocument(
+    DATABASE_ID,
+    COLLECTION_USERS,
+    userId,
+    {
+      userId,
+      username,
+      name,
+      profile_Img: DEFAULT_PROFILE_IMAGE_ID,
+    },
+    [Permission.read(Role.user(userId)), Permission.update(Role.user(userId))]
+  );
+
+  return userDoc;
+};
+
+export const isUsernameAvailable = async (
+  username: string
+): Promise<boolean> => {
+  try {
+    const response = await databases.listDocuments(
+      DATABASE_ID,
+      COLLECTION_USERS,
+      [Query.equal("username", username)]
+    );
+
+    console.log("Username check response:", response);
+
+
+    // If any document exists with that username, it's taken
+    return response.documents.length === 0;
+  } catch (error) {
+    console.error("Error checking username availability:", error);
+    return false; // Assume unavailable on error
+  }
 };

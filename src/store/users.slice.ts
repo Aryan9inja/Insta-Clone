@@ -77,7 +77,6 @@ const userSlice = createSlice({
       })
       .addCase(getUserThunk.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.isLoggedIn = true;
         state.user = action.payload;
       })
       .addCase(getUserThunk.rejected, (state, action) => {
