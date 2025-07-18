@@ -1,4 +1,3 @@
-import { BrowserRouter } from "react-router-dom";
 import AppRoutes from "./routes/routes";
 import { useAppDispatch, useAppSelector } from "./hooks/useRedux";
 import { useEffect } from "react";
@@ -10,16 +9,13 @@ function App() {
   const isLoading = useAppSelector((state) => state.users.isLoading);
 
   useEffect(() => {
+    console.log("Dispacthing get user thunk");
     dispatch(getUserThunk());
-  },[dispatch]);
+  }, [dispatch]);
 
   if (isLoading) return <SplashScreen />;
 
-  return (
-    <BrowserRouter>
-      <AppRoutes />
-    </BrowserRouter>
-  );
+  return <AppRoutes />;
 }
 
 export default App;

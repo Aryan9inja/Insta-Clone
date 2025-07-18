@@ -23,7 +23,7 @@ interface UserState {
 const initialState: UserState = {
   user: null,
   isLoggedIn: false,
-  isLoading: false,
+  isLoading: true,
   error: null,
 };
 
@@ -76,6 +76,7 @@ const userSlice = createSlice({
         state.error = null;
       })
       .addCase(getUserThunk.fulfilled, (state, action) => {
+        state.isLoggedIn=true
         state.isLoading = false;
         state.user = action.payload;
       })
