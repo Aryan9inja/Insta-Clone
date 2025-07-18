@@ -31,6 +31,8 @@ export const signUp = async (email: string, password: string, name: string) => {
 export const login = async (email: string, password: string) => {
   try {
     await account.createEmailPasswordSession(email, password);
+    const user=await account.get()
+    return user;
   } catch (error) {
     console.log("Login failed: ", error);
     throw error;
@@ -46,14 +48,15 @@ export const logout = async () => {
   }
 };
 
-export const getCurrentUser = async (): Promise<User | null> => {
+export const getCurrentUser = async (userId: string): Promise<User | null> => {
   try {
-    const session = await account.get();
-    const userDoc: Models.Document = await databases.getDocument(
+    const docList = await databases.listDocuments(
       DATABASE_ID,
       COLLECTION_USERS,
-      session.$id
+      [Query.equal("userId", userId)]
     );
+
+    const userDoc = docList.documents[0];
 
     const user: User = {
       userId: userDoc.userId,
@@ -77,7 +80,7 @@ export const verifyEmail = async (userId: string, secret: string) => {
 };
 
 export const getProfileImgUrl = (fileId: string) => {
-  return storage.getFileDownload(BUCKET_ID, fileId ?? DEFAULT_PROFILE_IMAGE_ID);
+  return storage.getFileView(BUCKET_ID, fileId);
 };
 
 export const createUserProfile = async (
@@ -88,7 +91,7 @@ export const createUserProfile = async (
   const userDoc: Models.Document = await databases.createDocument(
     DATABASE_ID,
     COLLECTION_USERS,
-    userId,
+    ID.unique(),
     {
       userId,
       username,
@@ -111,10 +114,6 @@ export const isUsernameAvailable = async (
       [Query.equal("username", username)]
     );
 
-    console.log("Username check response:", response);
-
-
-    // If any document exists with that username, it's taken
     return response.documents.length === 0;
   } catch (error) {
     console.error("Error checking username availability:", error);

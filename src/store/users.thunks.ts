@@ -8,6 +8,7 @@ import {
 } from "../services/users.services";
 import type { SignupFormData } from "../schemas/signUp.schema";
 import type { LoginFormData } from "../schemas/login.schema";
+import { account } from "../lib/appwrite.config";
 
 export const signUpThunk = createAsyncThunk(
   "users/signup",
@@ -21,7 +22,7 @@ export const signUpThunk = createAsyncThunk(
 
       await createUserProfile(acountUser.$id, formData.username, formData.name);
 
-      const fullUser = getCurrentUser();
+      const fullUser = getCurrentUser(acountUser.$id);
       return fullUser;
     } catch (error: any) {
       return rejectWithValue(error?.message || "Signup Failed");
@@ -33,9 +34,9 @@ export const loginThunk = createAsyncThunk(
   "users/login",
   async (formData: LoginFormData, { rejectWithValue }) => {
     try {
-      await login(formData.email, formData.password);
+      const user = await login(formData.email, formData.password);
 
-      return await getCurrentUser();
+      return await getCurrentUser(user.$id);
     } catch (error: any) {
       return rejectWithValue(error?.message || "Login failed");
     }
@@ -58,7 +59,8 @@ export const getUserThunk = createAsyncThunk(
   "users/getUser",
   async (_, { rejectWithValue }) => {
     try {
-      return await getCurrentUser();
+      const user = await account.get();
+      return await getCurrentUser(user.$id);
     } catch (error: any) {
       return rejectWithValue(error?.message || "Failed to fetch current user");
     }
