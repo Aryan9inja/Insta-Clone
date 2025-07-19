@@ -28,7 +28,6 @@ const SignUpForm = () => {
 
   const onSubmit = async (data: SignupFormData) => {
     const isAvailable = await isUsernameAvailable(data.username);
-    console.log("isAvailable:", isAvailable); // 🔍 DEBUG
 
     if (!isAvailable) {
       toast.error("Username already taken");
