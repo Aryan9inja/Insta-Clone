@@ -1,16 +1,19 @@
 import { beforeEach, describe, expect, it, vi, type Mock } from "vitest";
 import { render, screen, waitFor } from "@testing-library/react";
-import { signUpThunk } from "../../store/users.thunks";
+import { signUpThunk } from "../../store/thunks/users.thunks";
 import * as userServices from "../../services/users.services";
 import { configureStore } from "@reduxjs/toolkit";
-import userReducer from "../../store/users.slice";
+import userReducer from "../../store/slices/users.slice";
 import { Provider } from "react-redux";
 import { BrowserRouter } from "react-router-dom";
 import SignUpForm from "./signUpForm";
 import userEvent from "@testing-library/user-event";
 import { toast } from "sonner";
 
-vi.mock("../../store/users.thunks");
+const mockSignUpThunk = vi.fn();
+vi.mock("../../store/users.thunks", () => ({
+  signUpThunk: mockSignUpThunk,
+}));
 vi.mock("../../services/users.services");
 vi.mock("sonner", () => ({
   Toaster: () => <div data-testid="toaster" />,
@@ -76,7 +79,6 @@ const fillForm = async (user: ReturnType<typeof userEvent.setup>) => {
 
 describe("SignUp Form", () => {
   let user: ReturnType<typeof userEvent.setup>;
-  const mockSignUpThunk = signUpThunk as unknown as Mock;
   const mockIsUsernameAvailable = userServices.isUsernameAvailable as Mock;
   const mockSendVerificationEmail = userServices.sendVerificationEmail as Mock;
 
@@ -92,12 +94,12 @@ describe("SignUp Form", () => {
     mockIsUsernameAvailable.mockResolvedValue(true);
     mockSendVerificationEmail.mockResolvedValue(true);
 
-    (signUpThunk.fulfilled as any).match = vi.fn().mockImplementation(
-      (action) => action.type === "signUpThunk/fulfilled"
-    );
-    (signUpThunk.rejected as any).match = vi.fn().mockImplementation(
-      (action) => action.type === "signUpThunk/rejected"
-    );
+    (signUpThunk.fulfilled as any).match = vi
+      .fn()
+      .mockImplementation((action) => action.type === "signUpThunk/fulfilled");
+    (signUpThunk.rejected as any).match = vi
+      .fn()
+      .mockImplementation((action) => action.type === "signUpThunk/rejected");
   });
 
   describe("rendering", () => {
@@ -286,9 +288,13 @@ describe("SignUp Form", () => {
       renderWithProvider();
 
       const nameInput = document.getElementById("name") as HTMLInputElement;
-      const usernameInput = document.getElementById("username") as HTMLInputElement;
+      const usernameInput = document.getElementById(
+        "username"
+      ) as HTMLInputElement;
       const emailInput = document.getElementById("email") as HTMLInputElement;
-      const passwordInput = document.getElementById("password") as HTMLInputElement;
+      const passwordInput = document.getElementById(
+        "password"
+      ) as HTMLInputElement;
 
       await user.type(nameInput, "John Doe");
       await user.type(usernameInput, "johndoe");

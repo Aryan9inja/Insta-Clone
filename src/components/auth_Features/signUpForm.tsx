@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { signupSchema, type SignupFormData } from "../../schemas/signUp.schema";
 import { useAppDispatch, useAppSelector } from "../../hooks/useRedux";
-import { signUpThunk } from "../../store/users.thunks";
+import { signUpThunk } from "../../store/thunks/users.thunks";
 import CustomButton from "../ui/button";
 import { useNavigate } from "react-router-dom";
 import {

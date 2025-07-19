@@ -1,18 +1,20 @@
-import { beforeEach, describe, expect, it, vi, type Mock } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { configureStore } from "@reduxjs/toolkit";
 import { Provider } from "react-redux";
 import { BrowserRouter } from "react-router-dom";
-
 import LoginForm from "./loginForm";
-import userReducer from "../../store/users.slice";
-import { loginThunk } from "../../store/users.thunks";
+import userReducer from "../../store/slices/users.slice";
+import { loginThunk } from "../../store/thunks/users.thunks";
 import { toast } from "sonner";
 
-vi.mock("../../store/users.thunks");
+const mockLoginThunk = vi.fn();
+vi.mock("../../store/users.thunks", () => ({
+  loginThunk: mockLoginThunk,
+}));
 vi.mock("sonner", () => ({
-    Toaster: () => <div data-testid="toaster" />,
+  Toaster: () => <div data-testid="toaster" />,
   toast: {
     error: vi.fn(),
     success: vi.fn(),
@@ -62,12 +64,14 @@ const validLoginData = {
 
 const fillForm = async (user: ReturnType<typeof userEvent.setup>) => {
   await user.type(document.getElementById("email")!, validLoginData.email);
-  await user.type(document.getElementById("password")!, validLoginData.password);
+  await user.type(
+    document.getElementById("password")!,
+    validLoginData.password
+  );
 };
 
 describe("LoginForm", () => {
   let user: ReturnType<typeof userEvent.setup>;
-  const mockLoginThunk = loginThunk as unknown as Mock;
 
   beforeEach(() => {
     vi.clearAllMocks();
@@ -78,12 +82,12 @@ describe("LoginForm", () => {
       payload: { userId: "123", username: data.email },
     }));
 
-    (loginThunk.fulfilled as any).match = vi.fn().mockImplementation(
-      (action) => action.type === "loginThunk/fulfilled"
-    );
-    (loginThunk.rejected as any).match = vi.fn().mockImplementation(
-      (action) => action.type === "loginThunk/rejected"
-    );
+    (loginThunk.fulfilled as any).match = vi
+      .fn()
+      .mockImplementation((action) => action.type === "loginThunk/fulfilled");
+    (loginThunk.rejected as any).match = vi
+      .fn()
+      .mockImplementation((action) => action.type === "loginThunk/rejected");
   });
 
   describe("Rendering", () => {

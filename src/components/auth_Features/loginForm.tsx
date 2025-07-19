@@ -1,12 +1,9 @@
 import FormInputBox from "../ui/formInput";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  loginSchema,
-  type LoginFormData,
-} from "../../schemas/login.schema";
+import { loginSchema, type LoginFormData } from "../../schemas/login.schema";
 import { useAppDispatch, useAppSelector } from "../../hooks/useRedux";
-import { loginThunk } from "../../store/users.thunks";
+import { loginThunk } from "../../store/thunks/users.thunks";
 import CustomButton from "../ui/button";
 import { useNavigate } from "react-router-dom";
 import { Toaster, toast } from "sonner";
@@ -29,7 +26,7 @@ const LoginForm = () => {
 
     if (loginThunk.fulfilled.match(result)) {
       toast.success("Login successful");
-      navigate("/"); 
+      navigate("/");
     } else {
       toast.error("Login failed. Please check your credentials.");
     }

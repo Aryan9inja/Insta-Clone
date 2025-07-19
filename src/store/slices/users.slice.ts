@@ -4,7 +4,7 @@ import {
   loginThunk,
   getUserThunk,
   logoutThunk,
-} from "./users.thunks";
+} from "../thunks/users.thunks";
 
 export interface User {
   userId: string;

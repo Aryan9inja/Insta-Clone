@@ -5,10 +5,10 @@ import {
   getCurrentUser,
   logout,
   createUserProfile,
-} from "../services/users.services";
-import type { SignupFormData } from "../schemas/signUp.schema";
-import type { LoginFormData } from "../schemas/login.schema";
-import { account } from "../lib/appwrite.config";
+} from "../../services/users.services";
+import type { SignupFormData } from "../../schemas/signUp.schema";
+import type { LoginFormData } from "../../schemas/login.schema";
+import { account } from "../../lib/appwrite.config";
 
 export const signUpThunk = createAsyncThunk(
   "users/signup",

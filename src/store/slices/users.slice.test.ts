@@ -6,7 +6,7 @@ import {
   loginThunk,
   logoutThunk,
   signUpThunk,
-} from "./users.thunks";
+} from "../thunks/users.thunks";
 
 const mockUser: User = {
   userId: "abc123",
