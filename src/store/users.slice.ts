@@ -6,14 +6,14 @@ import {
   logoutThunk,
 } from "./users.thunks";
 
-interface User {
+export interface User {
   userId: string;
   username: string;
   name: string;
   profile_Img: string;
 }
 
-interface UserState {
+export interface UserState {
   user: User | null;
   isLoggedIn: boolean;
   isLoading: boolean;
@@ -33,7 +33,7 @@ const userSlice = createSlice({
   reducers: {
     resetUserState: (state) => {
       state.user = null;
-      state.isLoading = false;
+      state.isLoading = true;
       state.isLoggedIn = false;
       state.error = null;
     },
