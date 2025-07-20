@@ -1,10 +1,12 @@
+import AllPosts from "../components/posts/allPosts";
 import Menu from "../components/ui/menu";
 
 function HomePage() {
   return (
     <div>
       <Menu />
-      <main className="md:ml-60 mb-14 md:mb-0 p-4">
+      <main className="mb-10 md:mb-0">
+        <AllPosts/>
       </main>
     </div>
   );
