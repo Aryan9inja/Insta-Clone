@@ -308,7 +308,6 @@ describe("User Thunks", () => {
       // Arrange
       vi.mocked(account.get).mockResolvedValue(mockAccountUser);
       vi.mocked(userServices.getCurrentUser).mockResolvedValue(mockFullUser);
-      const consoleSpy = vi.spyOn(console, "log").mockImplementation(() => {});
 
       // Act
       const result = await store.dispatch(getUserThunk());
@@ -320,12 +319,6 @@ describe("User Thunks", () => {
       expect(userServices.getCurrentUser).toHaveBeenCalledWith(
         mockAccountUser.$id
       );
-      expect(consoleSpy).toHaveBeenCalledWith(
-        "Fetched full user:",
-        mockFullUser
-      );
-
-      consoleSpy.mockRestore();
     });
 
     it("should handle account.get failure", async () => {

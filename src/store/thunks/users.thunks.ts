@@ -62,7 +62,6 @@ export const getUserThunk = createAsyncThunk(
       const user = await account.get();
 
       const fullUser = await getCurrentUser(user.$id);
-      console.log("Fetched full user:", fullUser);
       return fullUser;
     } catch (error: any) {
       return rejectWithValue(error?.message || "Failed to fetch current user");
