@@ -1,6 +1,6 @@
 import CustomButton from "../ui/button";
 import { useAppDispatch, useAppSelector } from "../../hooks/useRedux"; 
-import { logoutThunk } from "../../store/users.thunks"; 
+import { logoutThunk } from "../../store/thunks/users.thunks"; 
 import { getProfileImgUrl } from "../../services/users.services";
 import { useNavigate } from "react-router-dom";
 

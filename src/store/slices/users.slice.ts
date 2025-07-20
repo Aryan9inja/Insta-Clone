@@ -80,9 +80,9 @@ const userSlice = createSlice({
         state.isLoading = false;
         state.user = action.payload;
       })
-      .addCase(getUserThunk.rejected, (state, action) => {
+      .addCase(getUserThunk.rejected, (state) => {
         state.isLoading = false;
-        state.error = action.payload as string;
+        state.error = "No user available please relogin or signup";
       })
 
       //Logout User

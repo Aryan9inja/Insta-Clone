@@ -1,7 +1,7 @@
 import AppRoutes from "./routes/routes";
 import { useAppDispatch, useAppSelector } from "./hooks/useRedux";
 import { useEffect } from "react";
-import { getUserThunk } from "./store/users.thunks";
+import { getUserThunk } from "./store/thunks/users.thunks";
 import SplashScreen from "./components/ui/splashScreen";
 
 function App() {
@@ -9,7 +9,6 @@ function App() {
   const isLoading = useAppSelector((state) => state.users.isLoading);
 
   useEffect(() => {
-    console.log("Dispacthing get user thunk");
     dispatch(getUserThunk());
   }, [dispatch]);
 

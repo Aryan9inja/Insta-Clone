@@ -118,7 +118,7 @@ describe("userSlice", () => {
     });
 
     it("should handle reject", () => {
-      const errorMsg = "Get user failed";
+      const errorMsg = "No user available please relogin or signup";
       const nextState = getStateAfterAction({
         type: getUserThunk.rejected.type,
         payload: errorMsg,
@@ -154,7 +154,7 @@ describe("userSlice", () => {
     });
 
     it("should handle reject", () => {
-      const errorMsg = "Logout failed";
+      const errorMsg = "No user available please relogin or signup";
       const nextState = getStateAfterAction({
         type: getUserThunk.rejected.type,
         payload: errorMsg,
