@@ -1,25 +1,34 @@
 import CustomButton from "../ui/button";
-import { useAppDispatch, useAppSelector } from "../../hooks/useRedux"; 
-import { logoutThunk } from "../../store/thunks/users.thunks"; 
+import { useAppDispatch } from "../../hooks/useRedux";
+import { logoutThunk } from "../../store/thunks/users.thunks";
 import { getProfileImgUrl } from "../../services/users.services";
 import { useNavigate } from "react-router-dom";
 
-export default function UserInfo() {
-  const navigate=useNavigate()
+interface UserInfoProps {
+  profile_Img?: string;
+  username?: string;
+  name?: string;
+}
+
+export default function UserInfo({
+  profile_Img,
+  username,
+  name,
+}: UserInfoProps) {
+  const navigate = useNavigate();
   const dispatch = useAppDispatch();
-  const { user } = useAppSelector((state) => state.users);
 
   const handleLogout = () => {
     dispatch(logoutThunk());
-    navigate("/login")
+    navigate("/login");
   };
 
   return (
-    <div className="pt-6 md:ml-60 px-4 md:px-8 min-h-[40vh] flex items-center justify-between gap-10">
+    <div className="pt-2 px-4 md:px-8 min-h-[25vh] flex items-center gap-10">
       {/* Profile picture */}
       <div className="w-30 h-30 md:w-36 md:h-36 rounded-full overflow-hidden border-2 border-light-primary dark:border-dark-primary">
         <img
-          src={getProfileImgUrl(user?.profile_Img!)}
+          src={getProfileImgUrl(profile_Img!)}
           alt="Profile"
           className="w-full h-full object-cover"
         />
@@ -28,10 +37,10 @@ export default function UserInfo() {
       {/* User info */}
       <div className="flex flex-col justify-center items-start flex-1">
         <h2 className="text-xl md:text-2xl font-semibold text-light-primary dark:text-dark-primary">
-          {user?.username}
+          {username}
         </h2>
         <p className="text-sm md:text-base text-light-text dark:text-dark-text mt-1">
-          {user?.name}
+          {name}
         </p>
 
         <div className="mt-4">
