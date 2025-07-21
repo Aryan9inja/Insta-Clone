@@ -5,6 +5,7 @@ import {
   getCurrentUser,
   logout,
   createUserProfile,
+  updateProfileImage,
 } from "../../services/users.services";
 import type { SignupFormData } from "../../schemas/signUp.schema";
 import type { LoginFormData } from "../../schemas/login.schema";
@@ -65,6 +66,20 @@ export const getUserThunk = createAsyncThunk(
       return fullUser;
     } catch (error: any) {
       return rejectWithValue(error?.message || "Failed to fetch current user");
+    }
+  }
+);
+
+export const updateUserImgThunk = createAsyncThunk(
+  "users/updateImg",
+  async (file: File, { rejectWithValue }) => {
+    try {
+      const user = await account.get();
+      await updateProfileImage(user.$id, file);
+      const updatedUser=await getCurrentUser(user.$id);
+      return updatedUser;
+    } catch (error: any) {
+      return rejectWithValue(error?.message);
     }
   }
 );
