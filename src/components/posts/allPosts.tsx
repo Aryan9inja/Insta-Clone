@@ -10,13 +10,17 @@ export default function AllPosts() {
 
   useEffect(() => {
     (async function setAllPosts() {
-      const allPosts = await getPosts();
-      setPosts(allPosts.documents);
+      try {
+        const allPosts = await getPosts();
+        setPosts(allPosts.documents);
+      } catch (error) {
+        console.error("Failed to fetch posts", error);
+      }
     })();
   }, []);
 
   return (
-    <div className="md:ml-60 min-h-screen p-4 transition-colors bg-[var(--color-light-bg)] text-[var(--color-light-text)] dark:bg-[var(--color-dark-bg)] dark:text-[var(--color-dark-text)]">
+    <div data-testid="main-container" className="md:ml-60 min-h-screen p-4 transition-colors bg-[var(--color-light-bg)] text-[var(--color-light-text)] dark:bg-[var(--color-dark-bg)] dark:text-[var(--color-dark-text)]">
       {/* Centered Container */}
       <div className="w-full flex justify-center">
         <div className="w-full max-w-2xl">
