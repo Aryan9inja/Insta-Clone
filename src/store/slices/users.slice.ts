@@ -4,6 +4,7 @@ import {
   loginThunk,
   getUserThunk,
   logoutThunk,
+  updateUserImgThunk,
 } from "../thunks/users.thunks";
 
 export interface User {
@@ -76,7 +77,7 @@ const userSlice = createSlice({
         state.error = null;
       })
       .addCase(getUserThunk.fulfilled, (state, action) => {
-        state.isLoggedIn=true
+        state.isLoggedIn = true;
         state.isLoading = false;
         state.user = action.payload;
       })
@@ -96,6 +97,20 @@ const userSlice = createSlice({
         state.user = null;
       })
       .addCase(logoutThunk.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload as string;
+      })
+
+      //Update Profile pic
+      .addCase(updateUserImgThunk.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(updateUserImgThunk.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.user = action.payload;
+      })
+      .addCase(updateUserImgThunk.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload as string;
       });
