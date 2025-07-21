@@ -31,7 +31,7 @@ export const signUp = async (email: string, password: string, name: string) => {
 export const login = async (email: string, password: string) => {
   try {
     await account.createEmailPasswordSession(email, password);
-    const user=await account.get()
+    const user = await account.get();
     return user;
   } catch (error) {
     console.log("Login failed: ", error);
@@ -118,5 +118,37 @@ export const isUsernameAvailable = async (
   } catch (error) {
     console.error("Error checking username availability:", error);
     return false; // Assume unavailable on error
+  }
+};
+
+export const updateProfileImage = async (userId: string, file: File) => {
+  try {
+    const UserDocArray = await databases.listDocuments(
+      DATABASE_ID,
+      COLLECTION_USERS,
+      [Query.equal("userId", userId)]
+    );
+    const currentUserDoc = UserDocArray.documents[0];
+    const currentProfileImage = currentUserDoc.profile_Img;
+
+    const newFile = await storage.createFile(BUCKET_ID, ID.unique(), file, [
+      Permission.read(Role.any()),
+      Permission.update(Role.user(userId)),
+    ]);
+    if (currentProfileImage !== DEFAULT_PROFILE_IMAGE_ID) {
+      await storage.deleteFile(BUCKET_ID, currentProfileImage);
+    }
+
+    await databases.updateDocument(
+      DATABASE_ID,
+      COLLECTION_USERS,
+      currentUserDoc.$id,
+      {
+        profile_Img: newFile.$id,
+      }
+    );
+    return true;
+  } catch (error) {
+    throw new Error("Problem updating profile image !!");
   }
 };
