@@ -3,6 +3,7 @@ import { useAppDispatch } from "../../hooks/useRedux";
 import { logoutThunk } from "../../store/thunks/users.thunks";
 import { getProfileImgUrl } from "../../services/users.services";
 import { useNavigate } from "react-router-dom";
+import { Pencil } from "lucide-react";
 
 interface UserInfoProps {
   profile_Img?: string;
@@ -27,11 +28,21 @@ export default function UserInfo({
     <div className="pt-2 px-4 md:px-8 min-h-[25vh] flex items-center gap-10">
       {/* Profile picture */}
       <div className="w-30 h-30 md:w-36 md:h-36 rounded-full overflow-hidden border-2 border-light-primary dark:border-dark-primary">
-        <img
-          src={getProfileImgUrl(profile_Img!)}
-          alt="Profile"
-          className="w-full h-full object-cover"
-        />
+        <div
+          className="relative w-30 h-30 md:w-36 md:h-36 rounded-full overflow-hidden border-2 border-light-primary dark:border-dark-primary group cursor-pointer"
+          onClick={() => navigate("/updateProfile")}
+        >
+          <img
+            src={getProfileImgUrl(profile_Img!)}
+            alt="Profile"
+            className="w-full h-full object-cover"
+          />
+
+          {/* Pencil icon overlay */}
+          <div className="absolute inset-0 bg-gray-600 flex items-center justify-center opacity-0 group-hover:opacity-50 transition-opacity">
+            <Pencil className="text-white w-6 h-6" />
+          </div>
+        </div>
       </div>
 
       {/* User info */}

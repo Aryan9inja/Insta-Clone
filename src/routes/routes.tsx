@@ -6,6 +6,7 @@ import EmailVerification from "../components/auth_Features/verifyEmail";
 import LoginForm from "../components/auth_Features/loginForm";
 import ProfilePage from "../pages/ProfilePage";
 import ProtectedRoute from "../components/auth_Features/protectedRoute";
+import UpdateProfileImgPage from "../pages/UpdateProfileImgPage";
 
 const publicRoutes = [
   { path: "/signup", element: <SignUpForm /> },
@@ -16,6 +17,7 @@ const publicRoutes = [
 
 const protectedRoutes = [
   { path: "/profile", element: <ProfilePage /> },
+  { path: "/updateProfile", element: <UpdateProfileImgPage /> },
   { path: "/", element: <HomePage /> },
 ];
 
