@@ -1,18 +1,21 @@
 import { Plus } from "lucide-react";
 import { useEffect, useState } from "react";
-import { getPostImage, getPosts } from "../../services/posts.services";
-import { type Models } from "appwrite";
+import {
+  getPostImageUrl,
+  getPostsWithUserInfo,
+  type PostWithUserInfo,
+} from "../../services/posts.services";
 import PostCard from "./postCard";
 import { getProfileImgUrl } from "../../services/users.services";
 
 export default function AllPosts() {
-  const [posts, setPosts] = useState<Models.Document[]>([]);
+  const [posts, setPosts] = useState<PostWithUserInfo[]>([]);
 
   useEffect(() => {
     (async function setAllPosts() {
       try {
-        const allPosts = await getPosts();
-        setPosts(allPosts.documents);
+        const allPosts = await getPostsWithUserInfo();
+        setPosts(allPosts);
       } catch (error) {
         console.error("Failed to fetch posts", error);
       }
@@ -20,22 +23,32 @@ export default function AllPosts() {
   }, []);
 
   return (
-    <div data-testid="main-container" className="md:ml-60 min-h-screen p-4 transition-colors bg-[var(--color-light-bg)] text-[var(--color-light-text)] dark:bg-[var(--color-dark-bg)] dark:text-[var(--color-dark-text)]">
+    <div
+      data-testid="main-container"
+      className="md:ml-60 min-h-screen p-4 transition-colors bg-[var(--color-light-bg)] text-[var(--color-light-text)] dark:bg-[var(--color-dark-bg)] dark:text-[var(--color-dark-text)]"
+    >
       {/* Centered Container */}
       <div className="w-full flex justify-center">
         <div className="w-full max-w-2xl">
-          <div className="grid gap-6">
-            {posts.map((post) => (
-              <PostCard
-                key={post.$id}
-                username={post.username}
-                user_Img={getProfileImgUrl(post.user_Img)}
-                post_Img={getPostImage(post.post_Img)}
-                creationTime={post.$createdAt}
-                caption={post.caption}
-              />
-            ))}
-          </div>
+          {posts.length === 0 ? (
+            <div className="text-center mt-20 text-gray-500 dark:text-gray-400">
+              <p className="text-lg font-medium">No posts yet.</p>
+              <p className="text-sm mt-1">Be the first to create a post!</p>
+            </div>
+          ) : (
+            <div className="grid gap-6">
+              {posts.map((post) => (
+                <PostCard
+                  key={post.$id}
+                  username={post.username}
+                  user_Img={getProfileImgUrl(post.profile_Img)}
+                  post_Img={getPostImageUrl(post.post_Img)}
+                  creationTime={post.$createdAt}
+                  caption={post.caption}
+                />
+              ))}
+            </div>
+          )}
         </div>
       </div>
 

@@ -1,6 +1,6 @@
 import { type Models } from "appwrite";
 import { useEffect, useState } from "react";
-import { getPostImage, getUserPosts } from "../../services/posts.services";
+import { getPostImageUrl, getUserPosts } from "../../services/posts.services";
 
 type UserPostProps = {
   userId?: string;
@@ -29,7 +29,7 @@ const UserPost = ({ userId }: UserPostProps) => {
       {posts.map((post) => (
         <div key={post.$id} className="w-full h-40 md:aspect-square md:h-auto">
           <img
-            src={getPostImage(post.post_Img)}
+            src={getPostImageUrl(post.post_Img)}
             alt="User post"
             className="w-full h-full object-cover"
           />
