@@ -16,6 +16,13 @@ interface User {
   profile_Img: string;
 }
 
+export interface UserProfile extends Models.Document {
+  userId: string;
+  username: string;
+  name: string;
+  profile_Img: string;
+}
+
 export const signUp = async (email: string, password: string, name: string) => {
   try {
     await account.create(ID.unique(), email, password, name);
@@ -150,5 +157,34 @@ export const updateProfileImage = async (userId: string, file: File) => {
     return true;
   } catch (error) {
     throw new Error("Problem updating profile image !!");
+  }
+};
+
+export const searchUsers = async (
+  searchTerm: string
+): Promise<UserProfile[] | null> => {
+  try {
+    const trimmedTerm = searchTerm.trim();
+    if (!trimmedTerm || trimmedTerm.length < 2) {
+      return [];
+    }
+
+    const response = await databases.listDocuments<UserProfile>(
+      DATABASE_ID,
+      COLLECTION_USERS,
+      [
+        Query.or([
+          Query.search("username", trimmedTerm),
+          Query.search("name", trimmedTerm),
+        ]),
+        Query.limit(20),
+        Query.orderAsc("username"),
+      ]
+    );
+
+    return response.documents;
+  } catch (error) {
+    console.error("Error searching users:", error);
+    return null;
   }
 };
