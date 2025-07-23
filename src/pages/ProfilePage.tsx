@@ -1,9 +1,13 @@
+import { useState } from "react";
 import UserPost from "../components/posts/userPosts";
 import UserInfo from "../components/profile/userInfo";
 import Menu from "../components/ui/menu";
 import { useAppSelector } from "../hooks/useRedux";
+import SearchProfile from "../components/profile/searchProfile";
 
 export default function ProfilePage() {
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+
   const { user } = useAppSelector((state) => state.users);
   const userId = user?.userId;
   const profile_Img = user?.profile_Img;
@@ -12,12 +16,13 @@ export default function ProfilePage() {
 
   return (
     <div className="min-h-screen bg-light-bg dark:bg-dark-bg text-light-text dark:text-dark-text transition-colors">
-      <Menu />
+      <Menu onSearchClick={() => setIsSearchOpen(true)} />
 
       <main className="pt-6 md:ml-60">
         <UserInfo profile_Img={profile_Img} username={username} name={name} />
-        <UserPost userId={userId}/>
+        <UserPost userId={userId} />
       </main>
+      {isSearchOpen && <SearchProfile onClose={() => setIsSearchOpen(false)} />}
     </div>
   );
 }
