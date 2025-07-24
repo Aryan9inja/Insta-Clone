@@ -47,7 +47,8 @@ export const createPost = async (
 export const getPostsWithUserInfo = async (): Promise<PostWithUserInfo[]> => {
   const postsRes = await databases.listDocuments<Post>(
     DATABASE_ID,
-    COLLECTION_POSTS
+    COLLECTION_POSTS,
+    [Query.orderDesc("$createdAt")]
   );
   const posts = postsRes.documents;
 
@@ -88,4 +89,16 @@ export const getUserPosts = async (
 export const getPostImageUrl = (fileId: string) => {
   const postImgUrl = storage.getFileView(BUCKET_ID, fileId) as string;
   return postImgUrl;
+};
+
+export const uploadPostImage = async (file: File) => {
+  try {
+    const response = await storage.createFile(BUCKET_ID, ID.unique(), file, [
+      Permission.read(Role.users()),
+    ]);
+    return response.$id;
+  } catch (error) {
+    console.error("Image upload failed:", error);
+    throw error;
+  }
 };
