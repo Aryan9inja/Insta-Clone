@@ -1,9 +1,10 @@
 import CustomButton from "../ui/button";
-import { useAppDispatch } from "../../hooks/useRedux";
+import { useAppDispatch, useAppSelector } from "../../hooks/useRedux";
 import { logoutThunk } from "../../store/thunks/users.thunks";
 import { getProfileImgUrl } from "../../services/users.services";
 import { useNavigate } from "react-router-dom";
 import { Pencil } from "lucide-react";
+import { useEffect, useState } from "react";
 
 interface UserInfoProps {
   profile_Img?: string;
@@ -17,7 +18,16 @@ export default function UserInfo({
   name,
 }: UserInfoProps) {
   const navigate = useNavigate();
+  const [otherUser, setOtherUser] = useState(false);
+  const profileUsername = useAppSelector((state) => state.users.user?.username);
   const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    const checkUser = () => {
+      setOtherUser(username !== profileUsername);
+    };
+    checkUser();
+  }, [username, profileUsername]);
 
   const handleLogout = () => {
     dispatch(logoutThunk());
@@ -29,19 +39,21 @@ export default function UserInfo({
       {/* Profile picture */}
       <div className="w-30 h-30 md:w-36 md:h-36 rounded-full overflow-hidden border-2 border-light-primary dark:border-dark-primary">
         <div
-          className="relative w-30 h-30 md:w-36 md:h-36 rounded-full overflow-hidden border-2 border-light-primary dark:border-dark-primary group cursor-pointer"
-          onClick={() => navigate("/updateProfile")}
+          className={`relative w-30 h-30 md:w-36 md:h-36 rounded-full overflow-hidden border-2border-light-primary dark:border-dark-primary group ${
+            otherUser ? "cursor-default" : "cursor-pointer"
+          }`}
+          onClick={!otherUser ? () => navigate("/updateProfile") : undefined}
         >
           <img
             src={getProfileImgUrl(profile_Img!)}
             alt="Profile"
             className="w-full h-full object-cover"
           />
-
-          {/* Pencil icon overlay */}
-          <div className="absolute inset-0 bg-gray-600 flex items-center justify-center opacity-0 group-hover:opacity-50 transition-opacity">
-            <Pencil className="text-white w-6 h-6" />
-          </div>
+          {!otherUser && (
+            <div className="absolute inset-0 bg-gray-600 flex items-center justify-center opacity-0 group-hover:opacity-50 transition-opacity">
+              <Pencil className="text-white w-6 h-6" />
+            </div>
+          )}
         </div>
       </div>
 
@@ -55,7 +67,11 @@ export default function UserInfo({
         </p>
 
         <div className="mt-4">
-          <CustomButton label="Logout" onClick={handleLogout} />
+          {otherUser ? (
+            <div></div>
+          ) : (
+            <CustomButton label="Logout" onClick={handleLogout} />
+          )}
         </div>
       </div>
     </div>
