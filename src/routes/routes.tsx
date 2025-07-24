@@ -16,7 +16,7 @@ const publicRoutes = [
 ];
 
 const protectedRoutes = [
-  { path: "/profile", element: <ProfilePage /> },
+  { path: "/profile/:id", element: <ProfilePage /> },
   { path: "/updateProfile", element: <UpdateProfileImgPage /> },
   { path: "/", element: <HomePage /> },
 ];

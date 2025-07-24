@@ -1,24 +1,21 @@
 import { NavLink } from "react-router-dom";
-import {
-  Home,
-  Search,
-  MessageCircle,
-  User,
-  Sun,
-  Moon,
-} from "lucide-react";
+import { Home, Search, MessageCircle, User, Sun, Moon } from "lucide-react";
 import { useTheme } from "../../hooks/useTheme";
+import { useAppSelector } from "../../hooks/useRedux";
 
 interface MenuProps {
   onSearchClick: () => void;
 }
 
 export default function Menu({ onSearchClick }: MenuProps) {
+  const { user } = useAppSelector((state) => state.users);
+  const profilePath = user && `/profile/${user.userId}`;
+
   const menuItems = [
     { name: "Home", icon: <Home size={24} />, path: "/" },
     { name: "Search", icon: <Search size={24} />, action: onSearchClick },
     { name: "Message", icon: <MessageCircle size={24} />, path: "/messages" },
-    { name: "Profile", icon: <User size={24} />, path: "/profile" },
+    { name: "Profile", icon: <User size={24} />, path: profilePath },
   ];
   const { theme, toggleTheme } = useTheme();
 
