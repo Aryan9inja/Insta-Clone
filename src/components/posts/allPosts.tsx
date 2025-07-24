@@ -7,8 +7,10 @@ import {
 } from "../../services/posts.services";
 import PostCard from "./postCard";
 import { getProfileImgUrl } from "../../services/users.services";
+import { useNavigate } from "react-router-dom";
 
 export default function AllPosts() {
+  const navigate = useNavigate();
   const [posts, setPosts] = useState<PostWithUserInfo[]>([]);
 
   useEffect(() => {
@@ -53,7 +55,10 @@ export default function AllPosts() {
       </div>
 
       {/* Floating Action Button */}
-      <button className="fixed bottom-14 right-6 z-50 flex items-center gap-2 px-4 py-3 text-white rounded-full shadow-lg hover:scale-105 transition-all md:bottom-8 md:right-8 bg-[var(--color-light-primary)] dark:bg-[var(--color-dark-primary)] hover:bg-[var(--color-light-primary-hover)] dark:hover:bg-[var(--color-dark-primary-hover)] focus:bg-[var(--color-light-primary-focus)] dark:focus:bg-[var(--color-dark-primary-focus)]">
+      <button
+        onClick={() => navigate("/create")}
+        className="fixed bottom-14 right-6 z-50 flex items-center gap-2 px-4 py-3 text-white rounded-full shadow-lg hover:scale-105 transition-all md:bottom-8 md:right-8 bg-[var(--color-light-primary)] dark:bg-[var(--color-dark-primary)] hover:bg-[var(--color-light-primary-hover)] dark:hover:bg-[var(--color-dark-primary-hover)] focus:bg-[var(--color-light-primary-focus)] dark:focus:bg-[var(--color-dark-primary-focus)]"
+      >
         <Plus size={20} />
         <span className="hidden md:inline text-sm font-medium">
           Create new post
