@@ -1,8 +1,8 @@
-import { Query, type Models } from "appwrite";
+import { Permission, Query, Role, type Models } from "appwrite";
 import { COLLECTION_FOLLOWERS, DATABASE_ID } from "../constants/appwrite";
 import { databases, ID } from "../lib/appwrite.config";
 
-interface Follower extends Models.Document {
+export interface Follower extends Models.Document {
   followerId: string;
   followingId: string;
 }
@@ -10,7 +10,7 @@ interface Follower extends Models.Document {
 export const setNewFollowing = async (
   userId: string,
   newFollowingId: string
-): Promise<Follower | null> => {
+): Promise<Follower> => {
   try {
     const FollowerDoc: Follower = await databases.createDocument(
       DATABASE_ID,
@@ -19,18 +19,17 @@ export const setNewFollowing = async (
       {
         followerId: userId,
         followingId: newFollowingId,
-      }
+      },
+      [Permission.delete(Role.user(userId))]
     );
     return FollowerDoc;
   } catch (error) {
     console.error("Failed to create follower document:", error);
-    return null;
+    throw error;
   }
 };
 
-export const getFollowers = async (
-  userId: string
-): Promise<Follower[] | null> => {
+export const getFollowers = async (userId: string): Promise<Follower[]> => {
   try {
     const response = await databases.listDocuments<Follower>(
       DATABASE_ID,
@@ -40,13 +39,11 @@ export const getFollowers = async (
     return response.documents;
   } catch (error) {
     console.error("Failed to fetch followers:", error);
-    return null;
+    throw error;
   }
 };
 
-export const getFollowings = async (
-  userId: string
-): Promise<Follower[] | null> => {
+export const getFollowings = async (userId: string): Promise<Follower[]> => {
   try {
     const response = await databases.listDocuments<Follower>(
       DATABASE_ID,
@@ -56,14 +53,14 @@ export const getFollowings = async (
     return response.documents;
   } catch (error) {
     console.error("Failed to fetch followings:", error);
-    return null;
+    throw error;
   }
 };
 
 export const deleteFollowing = async (
   userId: string,
   followingId: string
-): Promise<boolean> => {
+): Promise<string | null> => {
   try {
     const response = await databases.listDocuments<Follower>(
       DATABASE_ID,
@@ -76,7 +73,7 @@ export const deleteFollowing = async (
 
     if (response.total === 0) {
       console.warn("No follow relationship found to delete.");
-      return false;
+      return null;
     }
 
     const documentId = response.documents[0].$id;
@@ -87,10 +84,10 @@ export const deleteFollowing = async (
       documentId
     );
 
-    return true;
+    return followingId;
   } catch (error) {
     console.error("Failed to delete follow relationship:", error);
-    return false;
+    throw error;
   }
 };
 
