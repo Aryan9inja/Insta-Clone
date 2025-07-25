@@ -4,34 +4,59 @@ import { logoutThunk } from "../../store/thunks/users.thunks";
 import { getProfileImgUrl } from "../../services/users.services";
 import { useNavigate } from "react-router-dom";
 import { Pencil } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
+import { useFollowers } from "../../hooks/useFollowers";
 
 interface UserInfoProps {
   profile_Img?: string;
   username?: string;
   name?: string;
+  userId?: string;
 }
 
 export default function UserInfo({
   profile_Img,
   username,
   name,
+  userId,
 }: UserInfoProps) {
   const navigate = useNavigate();
-  const [otherUser, setOtherUser] = useState(false);
   const profileUsername = useAppSelector((state) => state.users.user?.username);
+  const currentUserId = useAppSelector((state) => state.users.user?.userId);
   const dispatch = useAppDispatch();
 
+  // Followers hook
+  const {
+    followers,
+    followings,
+    isFollowing,
+    followUser,
+    unfollowUser,
+    loadFollowers,
+    loadFollowings,
+  } = useFollowers(userId);
+
+  const otherUser = username !== profileUsername;
+
   useEffect(() => {
-    const checkUser = () => {
-      setOtherUser(username !== profileUsername);
-    };
-    checkUser();
-  }, [username, profileUsername]);
+    if (userId) {
+      loadFollowers(userId);
+      loadFollowings(userId);
+    }
+  }, [userId]);
 
   const handleLogout = () => {
     dispatch(logoutThunk());
     navigate("/login");
+  };
+
+  const handleFollowToggle = () => {
+    if (!currentUserId || !userId) return;
+    if (isFollowing) {
+      unfollowUser(currentUserId, userId);
+    } else {
+      followUser(currentUserId, userId);
+    }
   };
 
   return (
@@ -39,13 +64,13 @@ export default function UserInfo({
       {/* Profile picture */}
       <div className="w-30 h-30 md:w-36 md:h-36 rounded-full overflow-hidden border-2 border-light-primary dark:border-dark-primary">
         <div
-          className={`relative w-30 h-30 md:w-36 md:h-36 rounded-full overflow-hidden border-2border-light-primary dark:border-dark-primary group ${
+          className={`relative w-30 h-30 md:w-36 md:h-36 rounded-full overflow-hidden border-2 border-light-primary dark:border-dark-primary group ${
             otherUser ? "cursor-default" : "cursor-pointer"
           }`}
           onClick={!otherUser ? () => navigate("/updateProfile") : undefined}
         >
           <img
-            src={getProfileImgUrl(profile_Img!)}
+            src={getProfileImgUrl(profile_Img || "")}
             alt="Profile"
             className="w-full h-full object-cover"
           />
@@ -66,9 +91,22 @@ export default function UserInfo({
           {name}
         </p>
 
+        {/* Followers/Following counts */}
+        <div className="mt-3 flex gap-4">
+          <span className="text-sm md:text-base text-light-primary dark:text-dark-primary">
+            {followers?.length ?? 0} Followers
+          </span>
+          <span className="text-sm md:text-base text-light-primary dark:text-dark-primary">
+            {followings?.length ?? 0} Following
+          </span>
+        </div>
+
         <div className="mt-4">
           {otherUser ? (
-            <div></div>
+            <CustomButton
+              label={isFollowing ? "Unfollow" : "Follow"}
+              onClick={handleFollowToggle}
+            />
           ) : (
             <CustomButton label="Logout" onClick={handleLogout} />
           )}

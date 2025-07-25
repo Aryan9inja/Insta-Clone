@@ -39,6 +39,7 @@ export default function ProfilePage() {
             profile_Img={profileData.profile_Img}
             username={profileData.username}
             name={profileData.name}
+            userId={profileData.userId}
           />
         )}
         {dynamicUserId && <UserPost userId={dynamicUserId} />}
