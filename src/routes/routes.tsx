@@ -8,6 +8,7 @@ import ProfilePage from "../pages/ProfilePage";
 import ProtectedRoute from "../components/auth_Features/protectedRoute";
 import UpdateProfileImgPage from "../pages/UpdateProfileImgPage";
 import CreatePostPage from "../pages/CreatePostPage";
+import TempPage from "../components/tempPage";
 
 const publicRoutes = [
   { path: "/signup", element: <SignUpForm /> },
@@ -20,7 +21,8 @@ const protectedRoutes = [
   { path: "/profile/:id", element: <ProfilePage /> },
   { path: "/updateProfile", element: <UpdateProfileImgPage /> },
   { path: "/", element: <HomePage /> },
-  {path:"/create",element:<CreatePostPage/>}
+  {path:"/create",element:<CreatePostPage/>},
+  {path:"/messages", element:<TempPage/>}
 ];
 
 const AppRoutes = () => {
