@@ -6,7 +6,11 @@ import type { User } from "../../store/slices/users.slice";
 import { getProfileImgUrl } from "../../services/users.services";
 
 interface ChatListProps {
-  onSelectReceiver: (receiverId: string) => void;
+  onSelectReceiver: (
+    receiverId: string,
+    receiverImage: string,
+    receiverUsername: string
+  ) => void;
 }
 
 const ChatList = ({ onSelectReceiver }: ChatListProps) => {
@@ -17,7 +21,6 @@ const ChatList = ({ onSelectReceiver }: ChatListProps) => {
 
   useEffect(() => {
     if (!userId) return;
-
     dispatch(getFollowingsThunk(userId));
   }, [dispatch, userId]);
 
@@ -26,28 +29,31 @@ const ChatList = ({ onSelectReceiver }: ChatListProps) => {
       const users = await mapFollowersToUsers(followings);
       setOtherUsers(users);
     };
-
     fetchUsers();
   }, [followings]);
 
   if (!userId) {
     return (
-      <div className="text-center mt-10 text-red-500">
+      <div className="text-center mt-10 text-[var(--color-error)]">
         Please relogin to use this page
       </div>
     );
   }
 
-  const handleChatOpen = (otherUserId: string) => {
-    onSelectReceiver(otherUserId);
+  const handleChatOpen = (
+    otherUserId: string,
+    otherUserProfileImg: string,
+    otherUserUsername: string
+  ) => {
+    onSelectReceiver(otherUserId, otherUserProfileImg, otherUserUsername);
   };
 
   return (
-    <div className="max-w-md mx-auto p-4">
+    <div className="max-w-md mx-auto p-4 text-[var(--color-light-text)] dark:text-[var(--color-dark-text)]">
       <h2 className="text-xl font-semibold mb-4">Your Chats</h2>
 
       {otherUsers.length === 0 ? (
-        <p className="text-gray-500 text-sm">
+        <p className="text-sm text-[var(--color-light-border)] dark:text-[var(--color-dark-border)]">
           You're not following anyone yet.
         </p>
       ) : (
@@ -55,8 +61,13 @@ const ChatList = ({ onSelectReceiver }: ChatListProps) => {
           {otherUsers.map((user) => (
             <li
               key={user.userId}
-              className="flex items-center gap-3 p-3 bg-white rounded shadow cursor-pointer hover:bg-gray-100"
-              onClick={() => handleChatOpen(user.userId)}
+              onClick={() =>
+                handleChatOpen(user.userId, user.profile_Img, user.username)
+              }
+              className="flex items-center gap-3 p-3 rounded shadow cursor-pointer
+                bg-[var(--color-light-card)] hover:bg-[var(--color-light-primary-hover)] 
+                dark:bg-[var(--color-dark-card)] dark:hover:bg-[var(--color-dark-primary-hover)] 
+                transition-colors"
             >
               <img
                 src={getProfileImgUrl(user.profile_Img)}
@@ -64,8 +75,12 @@ const ChatList = ({ onSelectReceiver }: ChatListProps) => {
                 className="w-10 h-10 rounded-full object-cover"
               />
               <div>
-                <p className="font-medium">{user.username}</p>
-                <p className="text-sm text-gray-500">@{user.userId}</p>
+                <p className="font-medium text-[var(--color-light-text)] dark:text-[var(--color-dark-text)]">
+                  {user.username}
+                </p>
+                <p className="text-sm text-[var(--color-light-border)] dark:text-[var(--color-dark-border)]">
+                  @{user.userId}
+                </p>
               </div>
             </li>
           ))}
