@@ -1,8 +1,6 @@
-import { useEffect, useRef, useState } from "react";
-import { io, Socket } from "socket.io-client";
+import { useState } from "react";
 import { getProfileImgUrl } from "../../services/users.services";
-
-const SOCKET_SERVER_URL = import.meta.env.VITE_SOCKET_SERVER_URL;
+import { useChatSocket } from "../../hooks/useChatSocket";
 
 interface Props {
   userId: string;
@@ -17,62 +15,11 @@ const ChatRoom = ({
   receiverImage,
   receiverUsername,
 }: Props) => {
-  const socketRef = useRef<Socket | null>(null);
   const [message, setMessage] = useState("");
-  const [messages, setMessages] = useState<{ from: string; content: string }[]>(
-    []
-  );
+  const { messages, sendMessage } = useChatSocket(userId, RECEIVER_ID);
 
-  useEffect(() => {
-    if (!userId) return;
-
-    const socket = io(SOCKET_SERVER_URL);
-
-    socket.on("connect", () => {
-      console.log("Connected to server");
-      socket.emit("register", { userId });
-
-      socket.on("registered", (data) => {
-        console.log("Registered:", data);
-      });
-
-      socket.on("receive_message", (payload) => {
-        setMessages((prev) => [
-          ...prev,
-          { from: payload.from, content: payload.message.content },
-        ]);
-      });
-
-      socket.on("message_sent", (payload) => {
-        console.log("Message sent confirmation:", payload);
-      });
-
-      socket.on("error", (err) => {
-        console.error("Socket error:", err);
-      });
-    });
-
-    socketRef.current = socket;
-
-    return () => {
-      socket.disconnect();
-    };
-  }, [userId]);
-
-  const sendMessage = () => {
-    if (!message.trim() || !socketRef.current || !userId) return;
-
-    const messagePayload = {
-      receiverId: RECEIVER_ID,
-      message: {
-        senderId: userId,
-        receiverId: RECEIVER_ID,
-        content: message,
-      },
-    };
-
-    socketRef.current.emit("send_message", messagePayload);
-    setMessages((prev) => [...prev, { from: userId, content: message }]);
+  const handleSend = () => {
+    sendMessage(message);
     setMessage("");
   };
 
@@ -96,7 +43,7 @@ const ChatRoom = ({
       </div>
 
       {/* Messages */}
-      <div className="flex-1 overflow-y-auto px-4 py-3 bg-[var(--color-light-bg)] dark:bg-[var(--color-dark-bg)] min-h-[40rem]">
+      <div className="flex-1 overflow-y-auto px-4 py-3 min-h-[40rem]">
         {messages.map((msg, idx) => (
           <div
             key={idx}
@@ -118,23 +65,17 @@ const ChatRoom = ({
       </div>
 
       {/* Message Input */}
-      <div className="p-4 border-t bg-[var(--color-light-card)] dark:bg-[var(--color-dark-card)] border-[var(--color-light-border)] dark:border-[var(--color-dark-border)] flex items-center gap-2">
+      <div className="p-4 border-t flex items-center gap-2">
         <input
-          className="flex-1 border rounded-full px-4 py-2 text-sm outline-none 
-          text-[var(--color-light-text)] dark:text-[var(--color-dark-text)] 
-          border-[var(--color-light-border)] dark:border-[var(--color-dark-border)] 
-          bg-[var(--color-light-bg)] dark:bg-[var(--color-dark-bg)] 
-          focus:ring-2 focus:ring-[var(--color-light-primary)] dark:focus:ring-[var(--color-dark-primary)]"
+          className="flex-1 border rounded-full px-4 py-2 text-sm outline-none"
           value={message}
           onChange={(e) => setMessage(e.target.value)}
           placeholder="Type your message..."
-          onKeyDown={(e) => e.key === "Enter" && sendMessage()}
+          onKeyDown={(e) => e.key === "Enter" && handleSend()}
         />
         <button
-          onClick={sendMessage}
-          className="px-5 py-2 text-sm text-white rounded-full 
-          bg-[var(--color-light-primary)] hover:bg-[var(--color-light-primary-hover)] focus:bg-[var(--color-light-primary-focus)] 
-          dark:bg-[var(--color-dark-primary)] dark:hover:bg-[var(--color-dark-primary-hover)] dark:focus:bg-[var(--color-dark-primary-focus)]"
+          onClick={handleSend}
+          className="px-5 py-2 text-sm text-white rounded-full bg-[var(--color-light-primary)] dark:bg-[var(--color-dark-primary)]"
         >
           Send
         </button>
