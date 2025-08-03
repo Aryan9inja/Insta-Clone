@@ -34,7 +34,7 @@ export default function ChatPage() {
         <div className="w-full lg:w-2/3">
           <ChatRoom
             userId={userId!}
-            RECEIVER_ID={receiverId}
+            receiverId={receiverId}
             receiverImage={receiverImage}
             receiverUsername={receiverUsername}
           />
