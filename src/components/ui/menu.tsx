@@ -25,7 +25,7 @@ export default function Menu({ onSearchClick }: MenuProps) {
       <div className="hidden md:flex flex-col justify-between fixed top-0 left-0 h-full w-60 border-r bg-light-bg dark:bg-dark-bg p-4 shadow-sm transition-colors duration-300">
         <div>
           <h1 className="text-2xl font-bold mb-6 text-light-primary dark:text-dark-primary transition-colors">
-            MyApp
+            Shutr
           </h1>
           {menuItems.map((item) =>
             item.path ? (

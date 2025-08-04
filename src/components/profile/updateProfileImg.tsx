@@ -27,7 +27,7 @@ function UpdateProfileImg() {
     if (updateUserImgThunk.fulfilled.match(result)) {
       setPreview(null);
       setFile(null);
-      navigate("/profile");
+      navigate(`/profile/${user.userId}`);
     } else {
       toast.error("Error updating image");
     }
@@ -86,7 +86,7 @@ function UpdateProfileImg() {
           </button>
 
           <button
-            onClick={() => navigate("/profile")}
+            onClick={() => navigate(`/profile/${user?.userId}`)}
             className="font-semibold py-2 px-6 rounded-lg text-white disabled:opacity-50
           bg-[var(--color-error)] hover:brightness-90"
           >
