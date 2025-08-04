@@ -6,6 +6,8 @@ import {
   DATABASE_ID,
 } from "../constants/appwrite";
 import { databases, ID, storage } from "../lib/appwrite.config";
+import imageCompression from "browser-image-compression";
+import { convertToWebP } from "../utility/convertToWebp";
 
 export interface Post extends Models.Document {
   userId: string;
@@ -92,10 +94,26 @@ export const getPostImageUrl = (fileId: string) => {
 };
 
 export const uploadPostImage = async (file: File) => {
+  if (!file || !(file instanceof File) || file.size === 0) {
+    throw new Error("Invalid or empty file provided for upload");
+  }
+
   try {
-    const response = await storage.createFile(BUCKET_ID, ID.unique(), file, [
+    // 1. Compress original image (JPEG/PNG)
+    const compressed = await imageCompression(file, {
+      maxSizeMB: 1,
+      maxWidthOrHeight: 1080,
+      useWebWorker: true,
+    });
+
+    // 2. Convert compressed image to WebP
+    const webpFile = await convertToWebP(compressed, file.name);
+
+    // 3. Upload WebP to Appwrite
+    const response = await storage.createFile(BUCKET_ID, ID.unique(), webpFile, [
       Permission.read(Role.users()),
     ]);
+
     return response.$id;
   } catch (error) {
     console.error("Image upload failed:", error);

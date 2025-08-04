@@ -8,6 +8,8 @@ import {
 } from "../constants/appwrite";
 import { account, ID, databases, storage } from "../lib/appwrite.config";
 import type { Models } from "appwrite";
+import imageCompression from "browser-image-compression";
+import { convertToWebP } from "../utility/convertToWebp";
 
 interface User {
   userId: string;
@@ -129,7 +131,28 @@ export const isUsernameAvailable = async (
 };
 
 export const updateProfileImage = async (userId: string, file: File) => {
+  if (!file || !(file instanceof File) || file.size === 0) {
+    throw new Error("Invalid or empty file provided for upload");
+  }
+
   try {
+    // 1. Compress image
+    const compressed = await imageCompression(file, {
+      maxSizeMB: 1,
+      maxWidthOrHeight: 720, // Profile images don't need to be too large
+      useWebWorker: true,
+    });
+
+    // 2. Convert to WebP
+    const webpFile = await convertToWebP(compressed, file.name);
+
+    // 3. Upload new image
+    const newFile = await storage.createFile(BUCKET_ID, ID.unique(), webpFile, [
+      Permission.read(Role.any()), // Publicly readable
+      Permission.update(Role.user(userId)),
+    ]);
+
+    // 4. Delete old image (if not default)
     const UserDocArray = await databases.listDocuments(
       DATABASE_ID,
       COLLECTION_USERS,
@@ -138,14 +161,11 @@ export const updateProfileImage = async (userId: string, file: File) => {
     const currentUserDoc = UserDocArray.documents[0];
     const currentProfileImage = currentUserDoc.profile_Img;
 
-    const newFile = await storage.createFile(BUCKET_ID, ID.unique(), file, [
-      Permission.read(Role.any()),
-      Permission.update(Role.user(userId)),
-    ]);
     if (currentProfileImage !== DEFAULT_PROFILE_IMAGE_ID) {
       await storage.deleteFile(BUCKET_ID, currentProfileImage);
     }
 
+    // 5. Update database reference
     await databases.updateDocument(
       DATABASE_ID,
       COLLECTION_USERS,
@@ -154,9 +174,11 @@ export const updateProfileImage = async (userId: string, file: File) => {
         profile_Img: newFile.$id,
       }
     );
+
     return true;
   } catch (error) {
-    throw new Error("Problem updating profile image !!");
+    console.error("Image update error:", error);
+    throw new Error("Problem updating profile image!");
   }
 };
 
