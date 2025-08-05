@@ -20,6 +20,12 @@ export default function ChatPage() {
     setReceiverUsername(receiverUsername);
   };
 
+  const handleCloseChat = () => {
+    setReceiverId(null);
+    setReceiverImage(null);
+    setReceiverUsername(null);
+  };
+
   return (
     <div className="flex flex-col lg:flex-row h-screen bg-[var(--color-light-bg)] text-[var(--color-light-text)] dark:bg-[var(--color-dark-bg)] dark:text-[var(--color-dark-text)]">
       {/* Chat List */}
@@ -37,6 +43,7 @@ export default function ChatPage() {
             receiverId={receiverId}
             receiverImage={receiverImage}
             receiverUsername={receiverUsername}
+            onBack={handleCloseChat}
           />
         </div>
       )}

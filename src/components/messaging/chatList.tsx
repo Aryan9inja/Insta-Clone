@@ -4,6 +4,8 @@ import { getFollowingsThunk } from "../../store/thunks/followers.thunks";
 import { mapFollowersToUsers } from "../../utility/mapFollowersToUser";
 import type { User } from "../../store/slices/users.slice";
 import { getProfileImgUrl } from "../../services/users.services";
+import { StepBack } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 interface ChatListProps {
   onSelectReceiver: (
@@ -14,6 +16,8 @@ interface ChatListProps {
 }
 
 const ChatList = ({ onSelectReceiver }: ChatListProps) => {
+  const navigate=useNavigate()
+
   const dispatch = useAppDispatch();
   const userId = useAppSelector((state) => state.users.user?.userId);
   const followings = useAppSelector((state) => state.followers.followings);
@@ -50,7 +54,9 @@ const ChatList = ({ onSelectReceiver }: ChatListProps) => {
 
   return (
     <div className="max-w-md mx-auto p-4 text-[var(--color-light-text)] dark:text-[var(--color-dark-text)]">
-      <h2 className="text-xl font-semibold mb-4">Your Chats</h2>
+      <div className="flex gap-2">
+      <div><StepBack onClick={()=>navigate("/")} size={30}/></div>
+      <h2 className="text-xl font-semibold mb-4">Your Chats</h2></div>
 
       {otherUsers.length === 0 ? (
         <p className="text-sm text-[var(--color-light-border)] dark:text-[var(--color-dark-border)]">

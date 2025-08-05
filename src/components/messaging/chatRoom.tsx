@@ -8,6 +8,7 @@ interface Props {
   receiverId: string;
   receiverImage: string;
   receiverUsername: string;
+  onBack:()=>void;
 }
 
 const ChatRoom = ({
@@ -15,6 +16,7 @@ const ChatRoom = ({
   receiverId,
   receiverImage,
   receiverUsername,
+  onBack
 }: Props) => {
   const { messages, sendMessage, fetchHistory, hasMore, loading, page } =
     useChatSocket(userId, receiverId);
@@ -24,6 +26,7 @@ const ChatRoom = ({
       <ChatRoomHeader
         receiverImage={receiverImage}
         receiverUsername={receiverUsername}
+        onBack={onBack}
       />
 
       <ChatRoomWindow
